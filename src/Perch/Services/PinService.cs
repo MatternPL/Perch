@@ -30,13 +30,23 @@ public sealed class PinService : IDisposable
 
     public bool IsPinned(IntPtr hWnd) => _pinned.Contains(hWnd);
 
+    /// <summary>
+    /// True when the window sits in the topmost band, whether Perch put it there or not.
+    /// A window stays topmost if Perch is killed rather than closed, and an app can also
+    /// set the style on itself — either way the honest answer is "yes, it is on top".
+    /// </summary>
+    public static bool IsOnTop(IntPtr hWnd) =>
+        Native.IsWindow(hWnd) && (Native.GetExStyle(hWnd) & Native.WS_EX_TOPMOST) != 0;
+
     public int Count => _pinned.Count;
 
     public bool TogglePin(IntPtr hWnd)
     {
         if (hWnd == IntPtr.Zero || !Native.IsWindow(hWnd)) return false;
 
-        if (_pinned.Contains(hWnd))
+        // Release it if it is on top for any reason, so a window left over from a
+        // previous Perch session can still be freed.
+        if (_pinned.Contains(hWnd) || IsOnTop(hWnd))
         {
             Unpin(hWnd);
             return false;
@@ -60,7 +70,12 @@ public sealed class PinService : IDisposable
 
     public void Unpin(IntPtr hWnd)
     {
-        if (Native.IsWindow(hWnd)) SetTopmost(hWnd, false);
+        if (Native.IsWindow(hWnd))
+        {
+            SetTopmost(hWnd, false);
+            Log.Info($"Unpinned '{Native.GetWindowTitle(hWnd)}'");
+        }
+
         _pinned.Remove(hWnd);
 
         if (_pinned.Count == 0) _keepAlive.Stop();

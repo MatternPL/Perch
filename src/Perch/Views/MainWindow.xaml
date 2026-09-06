@@ -67,11 +67,11 @@
                         BorderThickness="0,0,1,0">
                     <DockPanel Margin="16,18,16,16">
                         <StackPanel DockPanel.Dock="Top">
-                            <RadioButton x:Name="TabOverlay" Style="{StaticResource SideTab}" GroupName="Nav"
-                                         IsChecked="True" Checked="Tab_Checked" Tag="Overlay"
-                                         Content="Floating overlay" />
                             <RadioButton x:Name="TabPinned" Style="{StaticResource SideTab}" GroupName="Nav"
-                                         Checked="Tab_Checked" Tag="Pinned" Content="Pin a window" />
+                                         IsChecked="True" Checked="Tab_Checked" Tag="Pinned"
+                                         Content="Pin a window" />
+                            <RadioButton x:Name="TabOverlay" Style="{StaticResource SideTab}" GroupName="Nav"
+                                         Checked="Tab_Checked" Tag="Overlay" Content="Floating overlay" />
                             <RadioButton x:Name="TabRules" Style="{StaticResource SideTab}" GroupName="Nav"
                                          Checked="Tab_Checked" Tag="Rules" Content="Placement rules" />
                             <RadioButton x:Name="TabSettings" Style="{StaticResource SideTab}" GroupName="Nav"
@@ -100,7 +100,7 @@
                     <Grid>
 
                         <!-- ==================== Overlay page ==================== -->
-                        <StackPanel x:Name="PageOverlay">
+                        <StackPanel x:Name="PageOverlay" Visibility="Collapsed">
                             <TextBlock Text="Floating overlay" Style="{StaticResource Title}" />
                             <TextBlock Style="{StaticResource Caption}" Margin="0,4,0,18"
                                        Text="A small always-on-top viewer for video while you play. Drag it anywhere on your screen." />
@@ -187,10 +187,10 @@
                         </StackPanel>
 
                         <!-- ==================== Pinned page ==================== -->
-                        <StackPanel x:Name="PagePinned" Visibility="Collapsed">
+                        <StackPanel x:Name="PagePinned">
                             <TextBlock Text="Pin a window" Style="{StaticResource Title}" />
                             <TextBlock Style="{StaticResource Caption}" Margin="0,4,0,18"
-                                       Text="Keep any window you already have open above everything else — your own browser, a video player, a chat window." />
+                                       Text="Keep a window you already have open above everything else — your own browser, a video player, a chat window. It stays your window; Perch only holds it on top." />
 
                             <Border Style="{StaticResource Card}">
                                 <Grid>

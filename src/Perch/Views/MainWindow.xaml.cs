@@ -185,18 +185,19 @@ public partial class MainWindow : Window
         var selectedHandle = (WindowList.SelectedItem as WindowRow)?.Handle;
 
         _windows.Clear();
-        foreach (var window in WindowInfo.EnumerateUserWindows())
-            _windows.Add(new WindowRow(window, App.Pins.IsPinned(window.Handle)));
 
         // Pinned windows first: those are the ones the user is managing right now.
-        var ordered = _windows.OrderByDescending(w => w.IsPinned).ToList();
-        _windows.Clear();
-        foreach (var row in ordered) _windows.Add(row);
+        var rows = WindowInfo.EnumerateUserWindows()
+            .Select(w => new WindowRow(w, PinService.IsOnTop(w.Handle)))
+            .OrderByDescending(w => w.IsPinned)
+            .ToList();
+
+        foreach (var row in rows) _windows.Add(row);
 
         if (selectedHandle is not null)
             WindowList.SelectedItem = _windows.FirstOrDefault(w => w.Handle == selectedHandle);
 
-        PinnedCount.Text = App.Pins.Count switch
+        PinnedCount.Text = rows.Count(r => r.IsPinned) switch
         {
             0 => "No windows pinned",
             1 => "1 window pinned",
@@ -219,6 +220,11 @@ public partial class MainWindow : Window
     private void UnpinAll_Click(object sender, RoutedEventArgs e)
     {
         App.Pins.UnpinAll();
+
+        // Also release anything left on top by a previous Perch session.
+        foreach (var row in _windows.Where(r => PinService.IsOnTop(r.Handle)).ToList())
+            App.Pins.Unpin(row.Handle);
+
         RefreshWindows();
         Status("All windows unpinned.");
     }
@@ -462,7 +468,7 @@ public sealed class WindowRow
         {
             var monitor = MonitorService.FromWindow(_info.Handle);
             var where = monitor is null ? "" : $" · Monitor {monitor.Index}";
-            return $"{_info.ProcessName}.exe{where}{(IsPinned ? " · pinned on top" : "")}";
+            return $"{_info.ProcessName}.exe{where}{(IsPinned ? " · on top" : "")}";
         }
     }
 
