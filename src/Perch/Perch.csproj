@@ -11,7 +11,7 @@
     <AssemblyName>Perch</AssemblyName>
     <RootNamespace>Perch</RootNamespace>
     <ApplicationIcon>Assets\perch.ico</ApplicationIcon>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Product>Perch</Product>
     <Company>Perch</Company>
     <Description>Keep any window on top, and make apps open where they belong.</Description>
