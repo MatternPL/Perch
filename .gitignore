@@ -1,0 +1,22 @@
+## Build output
+bin/
+obj/
+publish/
+*.user
+*.suo
+
+## Rider / Visual Studio
+.vs/
+.idea/
+*.DotSettings.user
+
+## MSBuild / NuGet
+msbuild.log
+msbuild.err
+project.lock.json
+*.nuget.props
+*.nuget.targets
+
+## Local artefacts
+*.binlog
+*.zip
