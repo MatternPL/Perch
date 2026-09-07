@@ -88,7 +88,7 @@
                 <ui:ToggleSwitch x:Name="ChkClickThrough" Checked="Toggle_Changed" Unchecked="Toggle_Changed" />
             </ui:CardControl>
 
-            <ui:CardControl Margin="0,0,0,4">
+            <ui:CardControl>
                 <ui:CardControl.Icon>
                     <ui:SymbolIcon Symbol="EyeOff24" />
                 </ui:CardControl.Icon>
@@ -100,20 +100,6 @@
                 <ui:ToggleSwitch x:Name="ChkAutoHide" Checked="Toggle_Changed" Unchecked="Toggle_Changed" />
             </ui:CardControl>
 
-            <ui:CardControl>
-                <ui:CardControl.Icon>
-                    <ui:SymbolIcon Symbol="Layer24" />
-                </ui:CardControl.Icon>
-                <ui:CardControl.Header>
-                    <StackPanel VerticalAlignment="Center">
-                        <TextBlock FontWeight="SemiBold" Text="Opacity" />
-                        <TextBlock x:Name="OpacityLabel" Style="{StaticResource RowCaption}" />
-                    </StackPanel>
-                </ui:CardControl.Header>
-                <Slider x:Name="OpacityControl" Width="180" Minimum="0.2" Maximum="1.0"
-                        SmallChange="0.05" VerticalAlignment="Center"
-                        ValueChanged="Opacity_ValueChanged" />
-            </ui:CardControl>
 
             <ui:InfoBar Margin="0,20,0,0" IsOpen="True" IsClosable="False" Severity="Informational"
                         Title="Exclusive full-screen"

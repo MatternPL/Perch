@@ -10,8 +10,7 @@ Perch is a small Windows tray app that does three things well:
 2. **Placement rules.** Send an app to the monitor it belongs on, every time it opens.
    *Discord, maximised, on monitor 2* — set it once and stop dragging windows around.
 3. **A floating overlay,** if you would rather not give up a browser window: a borderless
-   always-on-top viewer with adjustable opacity, click-through, and a toolbar that hides
-   until you hover.
+   always-on-top viewer with click-through and a toolbar that hides until you hover.
 
 Built for wide and multi-monitor desktops, where there is plenty of screen left over
 while a game runs.
@@ -68,7 +67,6 @@ Drag it by the grip on the left of its toolbar, resize it from any edge.
 | Fight for the top of the stack | Re-asserts always-on-top every 1.5 s. Some games grab the top of the z-order for themselves; this takes it back. |
 | Never steal keyboard focus | Clicking the overlay will not pull focus out of a borderless game. You also cannot type into the page while it is on. |
 | Click-through | The mouse passes straight through to whatever is underneath. Toggle it back with the shortcut. |
-| Opacity | Fade the overlay down so you can see through it. |
 
 ## Shortcuts
 
@@ -77,7 +75,6 @@ Drag it by the grip on the left of its toolbar, resize it from any edge.
 | `Ctrl+Alt+P` | Pin / unpin the focused window |
 | `Ctrl+Alt+O` | Show or hide the overlay |
 | `Ctrl+Alt+C` | Toggle click-through |
-| `Ctrl+Alt+↑` / `↓` | More or less opaque |
 
 All of them are rebindable under **Settings**. They work while a game has focus.
 
@@ -93,6 +90,12 @@ game offers it, and on a fast machine the difference in performance is negligibl
 
 **DRM video.** Netflix, Disney+ and similar rely on Widevine, which the WebView2 runtime
 does not carry. YouTube, Twitch, and ordinary web video are fine.
+
+**A see-through overlay.** Fading the overlay needs `WS_EX_LAYERED`, and WPF clears that
+style on any window it did not make transparent itself. The supported alternative,
+`AllowsTransparency`, cannot render WebView2 content at all — so a translucent viewer
+would mean hosting the browser outside WPF entirely. Pin your own browser window instead
+if you want to see the game through it; the overlay is opaque by design.
 
 ## Building it yourself
 

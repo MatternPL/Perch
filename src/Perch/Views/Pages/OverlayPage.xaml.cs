@@ -38,8 +38,6 @@ public partial class OverlayPage : Page
             ChkNoActivate.IsChecked = Settings.NoActivate;
             ChkClickThrough.IsChecked = Settings.ClickThrough;
             ChkAutoHide.IsChecked = Settings.AutoHideToolbar;
-            OpacityControl.Value = Settings.Opacity;
-            OpacityLabel.Text = $"{Settings.Opacity * 100:0}% opaque";
             BookmarkList.ItemsSource = Settings.Bookmarks.Select(Bookmark.From).ToList();
 
             _loading = false;
@@ -83,16 +81,4 @@ public partial class OverlayPage : Page
         App.Config.Save();
     }
 
-    private void Opacity_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-    {
-        if (OpacityLabel is null) return;
-
-        OpacityLabel.Text = $"{e.NewValue * 100:0}% opaque";
-        if (_loading) return;
-
-        Settings.Opacity = e.NewValue;
-        App.Config.Save();
-
-        if (App.Overlay is { IsLoaded: true } live) live.SetOpacity(e.NewValue);
-    }
 }

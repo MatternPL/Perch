@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Perch.Models;
 
@@ -30,8 +30,6 @@ public sealed class OverlaySettings
     public double Width { get; set; } = 640;
     public double Height { get; set; } = 380;
 
-    /// <summary>0.20 - 1.00</summary>
-    public double Opacity { get; set; } = 1.0;
 
     /// <summary>Mouse events pass straight through to the game underneath.</summary>
     public bool ClickThrough { get; set; }
@@ -59,8 +57,7 @@ public sealed class HotkeySettings
     public string TogglePinForeground { get; set; } = "Ctrl+Alt+P";
     public string ToggleOverlay { get; set; } = "Ctrl+Alt+O";
     public string ToggleClickThrough { get; set; } = "Ctrl+Alt+C";
-    public string OpacityUp { get; set; } = "Ctrl+Alt+Up";
-    public string OpacityDown { get; set; } = "Ctrl+Alt+Down";
+
 }
 
 public enum TargetWindowState

@@ -1,4 +1,4 @@
-using System.Threading;
+﻿using System.Threading;
 using System.Windows;
 using Perch.Interop;
 using Perch.Services;
@@ -15,6 +15,7 @@ public partial class App : Application
 
     private Mutex? _instanceMutex;
     private EventWaitHandle? _showWindowEvent;
+    private bool _ownsInstanceMutex;
 
     public static ConfigService Config { get; private set; } = null!;
     public static PinService Pins { get; private set; } = null!;
@@ -97,8 +98,6 @@ public partial class App : Application
             Overlay.SetClickThrough(!Config.Config.Overlay.ClickThrough);
         });
 
-        Hotkeys.Register("opacityup", keys.OpacityUp, () => Overlay?.NudgeOpacity(+0.1));
-        Hotkeys.Register("opacitydown", keys.OpacityDown, () => Overlay?.NudgeOpacity(-0.1));
     }
 
     private static string Trim(string text) =>
@@ -156,6 +155,7 @@ public partial class App : Application
     private bool ClaimSingleInstance()
     {
         _instanceMutex = new Mutex(initiallyOwned: true, InstanceMutexName, out var isNew);
+        _ownsInstanceMutex = isNew;
 
         _showWindowEvent = new EventWaitHandle(false, EventResetMode.AutoReset, ShowWindowEventName);
 
@@ -186,7 +186,10 @@ public partial class App : Application
             Rules?.Dispose();
             Pins?.Dispose();
             Config?.SaveNow();
-            _instanceMutex?.ReleaseMutex();
+
+            // A second launch never owned the mutex — it only signalled the running
+            // instance and quit. Releasing it from here would throw every time.
+            if (_ownsInstanceMutex) _instanceMutex?.ReleaseMutex();
             _instanceMutex?.Dispose();
         }
         catch (Exception ex)

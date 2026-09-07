@@ -23,11 +23,12 @@ namespace Perch.Views;
 /// </summary>
 public partial class OverlayWindow : Window
 {
-    private readonly DispatcherTimer _topmostGuard;
+    private readonly DispatcherTimer _guard;
     private readonly DispatcherTimer _hoverWatch;
     private IntPtr _handle;
     private bool _ready;
     private bool _toolbarVisible = true;
+
 
     private static Models.OverlaySettings Settings => App.Config.Config.Overlay;
 
@@ -37,12 +38,13 @@ public partial class OverlayWindow : Window
 
         RestoreGeometry();
 
-        // Some games claim the top of the z-order for themselves; re-assert on a slow beat.
-        _topmostGuard = new DispatcherTimer(DispatcherPriority.Background)
+        // Full-screen apps take the top of the z-order for themselves, so it is
+        // re-asserted on a slow beat rather than trusted after a single call.
+        _guard = new DispatcherTimer(DispatcherPriority.Background)
         {
             Interval = TimeSpan.FromSeconds(1.5)
         };
-        _topmostGuard.Tick += (_, _) => KeepOnTop();
+        _guard.Tick += (_, _) => { if (Settings.AggressiveTopmost) KeepOnTop(); };
 
         // WebView2 hosts a child HWND, so WPF never sees the mouse enter the page.
         // Poll the cursor instead to decide whether the toolbar should be showing.
@@ -95,19 +97,15 @@ public partial class OverlayWindow : Window
     {
         _handle = new WindowInteropHelper(this).Handle;
 
-        // Out of Alt+Tab, and layered so opacity works without AllowsTransparency
-        // (which WebView2 cannot render into).
+        // Keep the overlay out of Alt+Tab.
         Native.ToggleExStyle(_handle, Native.WS_EX_TOOLWINDOW, true);
         Native.ToggleExStyle(_handle, Native.WS_EX_APPWINDOW, false);
-        Native.ToggleExStyle(_handle, Native.WS_EX_LAYERED, true);
 
-        OpacitySlider.Value = Settings.Opacity;
-        ApplyOpacity(Settings.Opacity);
         ApplyNoActivate(Settings.NoActivate);
         ApplyClickThrough(Settings.ClickThrough);
 
         KeepOnTop();
-        if (Settings.AggressiveTopmost) _topmostGuard.Start();
+        _guard.Start();
         _hoverWatch.Start();
 
         await InitializeWebViewAsync();
@@ -187,39 +185,7 @@ public partial class OverlayWindow : Window
         Settings.AggressiveTopmost = on;
         App.Config.Save();
 
-        if (on)
-        {
-            KeepOnTop();
-            _topmostGuard.Start();
-        }
-        else
-        {
-            _topmostGuard.Stop();
-        }
-    }
-
-    // ---- Opacity --------------------------------------------------------
-
-    private void ApplyOpacity(double value)
-    {
-        if (_handle == IntPtr.Zero) return;
-
-        var alpha = (byte)Math.Clamp(value * 255.0, 51, 255);
-        Native.SetLayeredWindowAttributes(_handle, 0, alpha, Native.LWA_ALPHA);
-    }
-
-    public double CurrentOpacity => OpacitySlider.Value;
-
-    public void NudgeOpacity(double delta) => SetOpacity(OpacitySlider.Value + delta);
-
-    public void SetOpacity(double value) =>
-        OpacitySlider.Value = Math.Clamp(value, OpacitySlider.Minimum, OpacitySlider.Maximum);
-
-    private void OpacitySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-    {
-        ApplyOpacity(e.NewValue);
-        Settings.Opacity = e.NewValue;
-        App.Config.Save();
+        if (on) KeepOnTop();
     }
 
     // ---- Click-through --------------------------------------------------
@@ -334,7 +300,7 @@ public partial class OverlayWindow : Window
 
     private void OnClosing(object? sender, CancelEventArgs e)
     {
-        _topmostGuard.Stop();
+        _guard.Stop();
         _hoverWatch.Stop();
 
         if (WindowState == WindowState.Normal)

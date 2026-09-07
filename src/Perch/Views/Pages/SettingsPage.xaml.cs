@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows;
@@ -33,8 +33,6 @@ public partial class SettingsPage : Page
             HkPin.Text = keys.TogglePinForeground;
             HkOverlay.Text = keys.ToggleOverlay;
             HkClickThrough.Text = keys.ToggleClickThrough;
-            HkOpacityUp.Text = keys.OpacityUp;
-            HkOpacityDown.Text = keys.OpacityDown;
 
             var general = App.Config.Config.General;
             ChkStartWithWindows.IsChecked = general.StartWithWindows;
@@ -78,8 +76,6 @@ public partial class SettingsPage : Page
             case "pin": keys.TogglePinForeground = gesture; break;
             case "overlay": keys.ToggleOverlay = gesture; break;
             case "clickthrough": keys.ToggleClickThrough = gesture; break;
-            case "opacityup": keys.OpacityUp = gesture; break;
-            case "opacitydown": keys.OpacityDown = gesture; break;
         }
 
         App.Config.Save();

@@ -33,7 +33,7 @@
                             PreviewKeyDown="Hotkey_PreviewKeyDown" />
             </ui:CardControl>
 
-            <ui:CardControl Margin="0,0,0,4">
+            <ui:CardControl>
                 <ui:CardControl.Icon>
                     <ui:SymbolIcon Symbol="Cursor24" />
                 </ui:CardControl.Icon>
@@ -44,20 +44,6 @@
                             PreviewKeyDown="Hotkey_PreviewKeyDown" />
             </ui:CardControl>
 
-            <ui:CardControl Margin="0,0,0,4">
-                <ui:CardControl.Icon>
-                    <ui:SymbolIcon Symbol="Layer24" />
-                </ui:CardControl.Icon>
-                <ui:CardControl.Header>
-                    <TextBlock VerticalAlignment="Center" Text="More opaque / more transparent" />
-                </ui:CardControl.Header>
-                <StackPanel Orientation="Horizontal">
-                    <ui:TextBox x:Name="HkOpacityUp" Width="150" IsReadOnly="True" Tag="opacityup"
-                                Margin="0,0,6,0" PreviewKeyDown="Hotkey_PreviewKeyDown" />
-                    <ui:TextBox x:Name="HkOpacityDown" Width="150" IsReadOnly="True" Tag="opacitydown"
-                                PreviewKeyDown="Hotkey_PreviewKeyDown" />
-                </StackPanel>
-            </ui:CardControl>
 
             <ui:InfoBar x:Name="HotkeyWarning" Margin="0,8,0,0" IsOpen="False" IsClosable="True"
                         Severity="Warning" Title="Shortcut not available" />
