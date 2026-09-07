@@ -13,6 +13,8 @@ Two things, for people with a wide or multi-monitor desk:
 Perch lives in the tray, uses no measurable CPU while it waits, and touches nothing except
 window positions.
 
+[![Buy me a beer](https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20beer&emoji=%F0%9F%8D%BA&slug=mattern&button_colour=5F7FFF&font_colour=ffffff&font_family=Arial&outline_colour=000000&coffee_colour=FFDD00)](https://www.buymeacoffee.com/mattern)
+
 ![Pin a window](docs/shot-pin.png)
 
 ---
@@ -118,6 +120,17 @@ The parts worth knowing about:
 
 The interface is [WPF-UI](https://github.com/lepoco/wpfui) repainted to match
 [Brisk](https://github.com/MatternPL/Brisk) — same palette, same square edges, same blue.
+
+## Supporting it
+
+Perch is free and stays free. If it saved you some dragging windows around, you can
+[buy me a beer](https://www.buymeacoffee.com/mattern).
+
+What it would go towards first is a code-signing certificate. [Brisk](https://github.com/MatternPL/Brisk)
+has been signed since 1.7.0, and the same certificate covers the publisher rather than a
+single program — so signing Perch too would end the SmartScreen warning above.
+
+---
 
 ## Licence
 
