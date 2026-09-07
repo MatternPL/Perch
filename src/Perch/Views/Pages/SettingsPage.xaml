@@ -1,0 +1,121 @@
+﻿<Page x:Class="Perch.Views.Pages.SettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Title="Settings">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="0,0,16,16">
+
+            <TextBlock Text="Settings" Style="{StaticResource PageTitle}" />
+            <TextBlock Style="{StaticResource Lede}"
+                       Text="Shortcuts work everywhere, including while a game has focus. Click a field and press the combination you want — it must include Ctrl, Alt, Shift or Win." />
+
+            <ui:CardControl Margin="0,0,0,4">
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="Pin24" />
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <TextBlock VerticalAlignment="Center" Text="Pin the focused window" />
+                </ui:CardControl.Header>
+                <ui:TextBox x:Name="HkPin" Width="180" IsReadOnly="True" Tag="pin"
+                            PreviewKeyDown="Hotkey_PreviewKeyDown" />
+            </ui:CardControl>
+
+            <ui:CardControl Margin="0,0,0,4">
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="Video24" />
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <TextBlock VerticalAlignment="Center" Text="Show or hide the overlay" />
+                </ui:CardControl.Header>
+                <ui:TextBox x:Name="HkOverlay" Width="180" IsReadOnly="True" Tag="overlay"
+                            PreviewKeyDown="Hotkey_PreviewKeyDown" />
+            </ui:CardControl>
+
+            <ui:CardControl Margin="0,0,0,4">
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="Cursor24" />
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <TextBlock VerticalAlignment="Center" Text="Toggle click-through" />
+                </ui:CardControl.Header>
+                <ui:TextBox x:Name="HkClickThrough" Width="180" IsReadOnly="True" Tag="clickthrough"
+                            PreviewKeyDown="Hotkey_PreviewKeyDown" />
+            </ui:CardControl>
+
+            <ui:CardControl Margin="0,0,0,4">
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="Layer24" />
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <TextBlock VerticalAlignment="Center" Text="More opaque / more transparent" />
+                </ui:CardControl.Header>
+                <StackPanel Orientation="Horizontal">
+                    <ui:TextBox x:Name="HkOpacityUp" Width="150" IsReadOnly="True" Tag="opacityup"
+                                Margin="0,0,6,0" PreviewKeyDown="Hotkey_PreviewKeyDown" />
+                    <ui:TextBox x:Name="HkOpacityDown" Width="150" IsReadOnly="True" Tag="opacitydown"
+                                PreviewKeyDown="Hotkey_PreviewKeyDown" />
+                </StackPanel>
+            </ui:CardControl>
+
+            <ui:InfoBar x:Name="HotkeyWarning" Margin="0,8,0,0" IsOpen="False" IsClosable="True"
+                        Severity="Warning" Title="Shortcut not available" />
+
+            <TextBlock Text="Startup" Style="{StaticResource GroupLabel}" />
+
+            <ui:CardControl Margin="0,0,0,4">
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="Power24" />
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock FontWeight="SemiBold" Text="Start Perch when I sign in" />
+                        <TextBlock Style="{StaticResource RowCaption}"
+                                   Text="Added to your own startup list — no administrator rights involved." />
+                    </StackPanel>
+                </ui:CardControl.Header>
+                <ui:ToggleSwitch x:Name="ChkStartWithWindows" Checked="General_Changed" Unchecked="General_Changed" />
+            </ui:CardControl>
+
+            <ui:CardControl Margin="0,0,0,4">
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="ArrowMinimize24" />
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <TextBlock VerticalAlignment="Center" Text="Start in the tray, without this window" />
+                </ui:CardControl.Header>
+                <ui:ToggleSwitch x:Name="ChkStartMinimized" Checked="General_Changed" Unchecked="General_Changed" />
+            </ui:CardControl>
+
+            <ui:CardControl>
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="Alert24" />
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <TextBlock VerticalAlignment="Center" Text="Show tray notifications" />
+                </ui:CardControl.Header>
+                <ui:ToggleSwitch x:Name="ChkNotifications" Checked="General_Changed" Unchecked="General_Changed" />
+            </ui:CardControl>
+
+            <TextBlock Text="About" Style="{StaticResource GroupLabel}" />
+
+            <ui:CardControl>
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="Document24" />
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock x:Name="VersionLabel" FontWeight="SemiBold" Text="Perch" />
+                        <TextBlock x:Name="ConfigPathLabel" Style="{StaticResource RowCaption}"
+                                   TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                </ui:CardControl.Header>
+                <StackPanel Orientation="Horizontal">
+                    <ui:Button Content="Settings folder" Click="OpenConfigFolder_Click" Margin="0,0,6,0" />
+                    <ui:Button Content="Log" Click="OpenLog_Click" />
+                </StackPanel>
+            </ui:CardControl>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

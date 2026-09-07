@@ -1,66 +1,58 @@
-<Window x:Class="Perch.Views.AppPickerWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
-        Title="Pick an app"
-        Width="520" Height="540"
-        WindowStyle="None"
-        ResizeMode="NoResize"
-        WindowStartupLocation="CenterOwner"
-        ShowInTaskbar="False"
-        Background="{StaticResource Background}"
-        UseLayoutRounding="True">
+<ui:FluentWindow x:Class="Perch.Views.AppPickerWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                 Title="Running applications"
+                 Width="520" Height="560"
+                 ResizeMode="NoResize"
+                 WindowStartupLocation="CenterOwner"
+                 ShowInTaskbar="False"
+                 ExtendsContentIntoTitleBar="True"
+                 WindowBackdropType="Mica"
+                 WindowCornerPreference="Round">
 
-    <shell:WindowChrome.WindowChrome>
-        <shell:WindowChrome CaptionHeight="0" ResizeBorderThickness="0"
-                            GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False" />
-    </shell:WindowChrome.WindowChrome>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
-    <Border BorderBrush="{StaticResource BorderBrushStrong}" BorderThickness="1">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+        <ui:TitleBar Grid.Row="0" Title="Running applications" ShowMaximize="False" ShowMinimize="False" />
 
-            <Border x:Name="TitleBar" Grid.Row="0" Height="44" Background="#FF0D0F15">
-                <Grid Margin="16,0">
-                    <TextBlock Text="Running applications" VerticalAlignment="Center"
-                               FontFamily="{StaticResource DisplayFont}" FontSize="14" FontWeight="SemiBold"
-                               Foreground="{StaticResource Text}" />
-                    <Button Style="{StaticResource IconButton}" Content="&#xE8BB;" HorizontalAlignment="Right"
-                            Click="Cancel_Click" />
-                </Grid>
-            </Border>
+        <ui:TextBox x:Name="SearchBox" Grid.Row="1" Margin="20,4,20,10"
+                    PlaceholderText="Filter by app or window title"
+                    TextChanged="SearchBox_TextChanged">
+            <ui:TextBox.Icon>
+                <ui:SymbolIcon Symbol="Search24" />
+            </ui:TextBox.Icon>
+        </ui:TextBox>
 
-            <TextBox x:Name="SearchBox" Grid.Row="1" Style="{StaticResource Field}" Margin="16,14,16,10"
-                     TextChanged="SearchBox_TextChanged" ToolTip="Filter" />
+        <ListBox x:Name="AppList" Grid.Row="2" Margin="16,0" Background="Transparent" BorderThickness="0"
+                 MouseDoubleClick="AppList_MouseDoubleClick">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Margin="2,4">
+                        <TextBlock Text="{Binding Display}" Style="{StaticResource RowTitle}" />
+                        <TextBlock Text="{Binding ProcessName}" Style="{StaticResource RowCaption}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
 
-            <ListBox x:Name="AppList" Grid.Row="2" Style="{StaticResource PlainList}"
-                     ItemContainerStyle="{StaticResource RowItem}" Margin="16,0"
-                     MouseDoubleClick="AppList_MouseDoubleClick">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel>
-                            <TextBlock Text="{Binding Display}" Style="{StaticResource Body}"
-                                       TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
-                            <TextBlock Text="{Binding ProcessName}" Style="{StaticResource Caption}"
-                                       FontSize="11" Margin="0,2,0,0" />
-                        </StackPanel>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-
-            <Border Grid.Row="3" Background="#FF0D0F15" BorderBrush="{StaticResource BorderBrushSoft}"
-                    BorderThickness="0,1,0,0" Padding="16,12">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Style="{StaticResource GhostButton}" Content="Cancel" Click="Cancel_Click"
-                            Margin="0,0,10,0" />
-                    <Button Style="{StaticResource PrimaryButton}" Content="Use this app" Click="Choose_Click" />
-                </StackPanel>
-            </Border>
-        </Grid>
-    </Border>
-</Window>
+        <Border Grid.Row="3" Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="0,1,0,0"
+                Padding="20,14">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <ui:Button Content="Cancel" Click="Cancel_Click" Margin="0,0,10,0" MinWidth="90" />
+                <ui:Button Content="Use this app" Appearance="Primary" Click="Choose_Click" MinWidth="120" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</ui:FluentWindow>

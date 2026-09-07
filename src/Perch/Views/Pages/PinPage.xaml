@@ -1,0 +1,79 @@
+﻿<Page x:Class="Perch.Views.Pages.PinPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Title="Pin a window">
+
+    <Grid Margin="0,0,16,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="Pin a window" Style="{StaticResource PageTitle}" />
+            <TextBlock Style="{StaticResource Lede}"
+                   Text="Keep a window you already have open above everything else — your own browser, a video player, a chat window. It stays your window; Perch only holds it on top." />
+        </StackPanel>
+
+        <ui:CardControl Grid.Row="1" Margin="0,0,0,16">
+            <ui:CardControl.Icon>
+                <ui:SymbolIcon Symbol="Pin24" />
+            </ui:CardControl.Icon>
+            <ui:CardControl.Header>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock x:Name="PinnedCount" FontWeight="SemiBold" Text="No windows pinned" />
+                    <TextBlock x:Name="PinHotkeyLabel" Style="{StaticResource RowCaption}" />
+                </StackPanel>
+            </ui:CardControl.Header>
+
+            <StackPanel Orientation="Horizontal">
+                <ui:Button Content="Refresh" Click="Refresh_Click" Margin="0,0,8,0">
+                    <ui:Button.Icon>
+                        <ui:SymbolIcon Symbol="ArrowClockwise24" />
+                    </ui:Button.Icon>
+                </ui:Button>
+                <ui:Button Content="Unpin all" Click="UnpinAll_Click">
+                    <ui:Button.Icon>
+                        <ui:SymbolIcon Symbol="PinOff24" />
+                    </ui:Button.Icon>
+                </ui:Button>
+            </StackPanel>
+        </ui:CardControl>
+
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="WindowList">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1" CornerRadius="8"
+                                Padding="14,12" Margin="0,0,0,6">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <ui:SymbolIcon Grid.Column="0" Symbol="{Binding Glyph}" FontSize="18"
+                                               Margin="0,0,14,0" VerticalAlignment="Center"
+                                               Foreground="{Binding GlyphBrush}" />
+
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,12,0">
+                                    <TextBlock Text="{Binding Title}" Style="{StaticResource RowTitle}" />
+                                    <TextBlock Text="{Binding Subtitle}" Style="{StaticResource RowCaption}" />
+                                </StackPanel>
+
+                                <ui:Button Grid.Column="2" Content="{Binding ActionLabel}"
+                                           Appearance="{Binding ActionAppearance}"
+                                           Tag="{Binding}" Click="TogglePin_Click" MinWidth="96" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</Page>

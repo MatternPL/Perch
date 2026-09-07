@@ -1,11 +1,11 @@
 using System.Windows;
-using System.Windows.Controls;
 using Perch.Models;
 using Perch.Services;
+using Wpf.Ui.Controls;
 
 namespace Perch.Views;
 
-public partial class RuleEditorWindow : Window
+public partial class RuleEditorWindow : FluentWindow
 {
     private readonly WindowRule _rule;
     private List<MonitorTarget> _monitors = new();
@@ -15,9 +15,8 @@ public partial class RuleEditorWindow : Window
         InitializeComponent();
 
         _rule = rule;
-        HeaderText.Text = isNew ? "New rule" : $"Edit rule — {rule.DisplayName}";
-
-        TitleBar.MouseLeftButtonDown += (_, _) => DragMove();
+        Title = isNew ? "New rule" : $"Edit rule — {rule.DisplayName}";
+        Bar.Title = Title;
 
         Loaded += (_, _) => Fill();
 
@@ -62,7 +61,7 @@ public partial class RuleEditorWindow : Window
 
     private void UpdatePreview()
     {
-        if (PreviewText is null) return;
+        if (PreviewBar is null) return;
 
         var process = string.IsNullOrWhiteSpace(ProcessBox.Text) ? "the app" : ProcessBox.Text.Trim();
         var monitor = MonitorCombo.SelectedItem as MonitorTarget;
@@ -81,7 +80,7 @@ public partial class RuleEditorWindow : Window
 
         var top = ChkAlwaysOnTop.IsChecked == true ? ", and kept above other windows" : "";
 
-        PreviewText.Text = $"When a {process} window{title} opens, move it to {where} and make it {state}{top}.";
+        PreviewBar.Message = $"When a {process} window{title} opens, move it to {where} and make it {state}{top}.";
     }
 
     private void PickApp_Click(object sender, RoutedEventArgs e)
@@ -134,8 +133,8 @@ public partial class RuleEditorWindow : Window
 
     private void ShowError(string message)
     {
-        ErrorText.Text = message;
-        ErrorText.Visibility = Visibility.Visible;
+        ErrorBar.Message = message;
+        ErrorBar.IsOpen = true;
     }
 
     private void Cancel_Click(object sender, RoutedEventArgs e) => DialogResult = false;

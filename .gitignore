@@ -2,6 +2,8 @@
 bin/
 obj/
 publish/
+publish-portable/
+dist/
 *.user
 *.suo
 

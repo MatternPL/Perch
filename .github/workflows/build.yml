@@ -11,9 +11,9 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '9.0.x'
 
@@ -23,16 +23,17 @@ jobs:
       - name: Build
         run: dotnet build src/Perch/Perch.csproj -c Release --no-restore
 
-      - name: Publish single file
-        run: >
-          dotnet publish src/Perch/Perch.csproj
-          -c Release -r win-x64 --self-contained true
-          -p:PublishSingleFile=true
-          -p:IncludeNativeLibrariesForSelfExtract=true
-          -p:EnableCompressionInSingleFile=true
-          -o publish
+      - name: Ensure Inno Setup
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { choco install innosetup -y --no-progress }
+
+      - name: Build installer and portable build
+        shell: pwsh
+        run: ./installer/build-installer.ps1
 
       - uses: actions/upload-artifact@v4
         with:
           name: Perch
-          path: publish/Perch.exe
+          path: dist/*

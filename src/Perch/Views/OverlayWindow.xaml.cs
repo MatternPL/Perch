@@ -9,7 +9,11 @@ using System.Windows.Threading;
 using Microsoft.Web.WebView2.Core;
 using Perch.Interop;
 using Perch.Services;
+using Wpf.Ui.Controls;
 using MessageBox = System.Windows.MessageBox;
+using MessageBoxButton = System.Windows.MessageBoxButton;
+using MessageBoxResult = System.Windows.MessageBoxResult;
+using MessageBoxImage = System.Windows.MessageBoxImage;
 
 namespace Perch.Views;
 
@@ -239,9 +243,7 @@ public partial class OverlayWindow : Window
         if (_handle == IntPtr.Zero) return;
 
         Native.ToggleExStyle(_handle, Native.WS_EX_TRANSPARENT, on);
-        ClickThroughButton.Foreground = on
-            ? (System.Windows.Media.Brush)FindResource("Accent")
-            : (System.Windows.Media.Brush)FindResource("TextMuted");
+        ClickThroughIcon.Foreground = Accent(on);
     }
 
     public void SetNoActivate(bool on)
@@ -309,10 +311,8 @@ public partial class OverlayWindow : Window
 
         var muted = !Web.CoreWebView2.IsMuted;
         Web.CoreWebView2.IsMuted = muted;
-        MuteButton.Content = muted ? "\uE74F" : "\uE767";
-        MuteButton.Foreground = muted
-            ? (System.Windows.Media.Brush)FindResource("Accent")
-            : (System.Windows.Media.Brush)FindResource("TextMuted");
+        MuteIcon.Symbol = muted ? SymbolRegular.SpeakerOff24 : SymbolRegular.Speaker224;
+        MuteIcon.Foreground = Accent(muted);
     }
 
     private void ClickThrough_Click(object sender, RoutedEventArgs e) => SetClickThrough(!Settings.ClickThrough);
@@ -325,6 +325,10 @@ public partial class OverlayWindow : Window
         Navigate(AddressBox.Text);
         e.Handled = true;
     }
+
+    /// <summary>Accent when a toggle is on, muted grey when it is off.</summary>
+    private System.Windows.Media.Brush Accent(bool on) => (System.Windows.Media.Brush)FindResource(
+        on ? "AccentTextFillColorPrimaryBrush" : "TextFillColorTertiaryBrush");
 
     // ---- Lifetime -------------------------------------------------------
 

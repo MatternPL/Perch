@@ -1,10 +1,10 @@
-using System.Windows;
 using System.Windows.Input;
 using Perch.Interop;
+using Wpf.Ui.Controls;
 
 namespace Perch.Views;
 
-public partial class AppPickerWindow : Window
+public partial class AppPickerWindow : FluentWindow
 {
     private List<WindowInfo> _all = new();
 
@@ -13,8 +13,6 @@ public partial class AppPickerWindow : Window
     public AppPickerWindow()
     {
         InitializeComponent();
-
-        TitleBar.MouseLeftButtonDown += (_, _) => DragMove();
 
         Loaded += (_, _) =>
         {
@@ -37,7 +35,7 @@ public partial class AppPickerWindow : Window
 
     private void AppList_MouseDoubleClick(object sender, MouseButtonEventArgs e) => Choose();
 
-    private void Choose_Click(object sender, RoutedEventArgs e) => Choose();
+    private void Choose_Click(object sender, System.Windows.RoutedEventArgs e) => Choose();
 
     private void Choose()
     {
@@ -46,5 +44,5 @@ public partial class AppPickerWindow : Window
         DialogResult = true;
     }
 
-    private void Cancel_Click(object sender, RoutedEventArgs e) => DialogResult = false;
+    private void Cancel_Click(object sender, System.Windows.RoutedEventArgs e) => DialogResult = false;
 }

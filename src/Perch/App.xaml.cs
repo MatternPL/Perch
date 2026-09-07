@@ -48,9 +48,8 @@ public partial class App : Application
         Config = new ConfigService();
         Config.Load();
 
-        // Keep the registry entry honest if the user moved or renamed the exe.
-        if (Config.Config.General.StartWithWindows != StartupService.IsEnabled())
-            StartupService.SetEnabled(Config.Config.General.StartWithWindows);
+        // Keep the registry entry honest if Perch has been installed, moved or renamed.
+        StartupService.Sync(Config.Config.General.StartWithWindows);
 
         Pins = new PinService();
         Hotkeys = new HotkeyService();

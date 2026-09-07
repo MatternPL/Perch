@@ -1,0 +1,123 @@
+﻿<Page x:Class="Perch.Views.Pages.OverlayPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Title="Floating overlay">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="0,0,16,16">
+
+            <TextBlock Text="Floating overlay" Style="{StaticResource PageTitle}" />
+            <TextBlock Style="{StaticResource Lede}"
+                       Text="A small always-on-top viewer for video while you play, if you would rather not give up one of your own browser windows." />
+
+            <ui:CardControl>
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="Video24" />
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock FontWeight="SemiBold" Text="Open the viewer" />
+                        <TextBlock Style="{StaticResource RowCaption}"
+                                   TextWrapping="Wrap" Text="Drag it by the grip on its toolbar." />
+                    </StackPanel>
+                </ui:CardControl.Header>
+
+                <StackPanel Orientation="Horizontal">
+                    <ui:TextBox x:Name="OverlayUrl" Width="280" Margin="0,0,8,0"
+                                PlaceholderText="https://…" KeyDown="OverlayUrl_KeyDown" />
+                    <ui:Button Content="Open" Appearance="Primary" Click="OpenOverlay_Click" />
+                </StackPanel>
+            </ui:CardControl>
+
+            <ItemsControl x:Name="BookmarkList" Margin="0,8,0,0">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <ui:Button Content="{Binding Label}" Tag="{Binding Url}" Click="Bookmark_Click"
+                                   Margin="0,0,8,8" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <TextBlock Text="Behaviour" Style="{StaticResource GroupLabel}" />
+
+            <ui:CardControl Margin="0,0,0,4">
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="ArrowSort24" />
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock FontWeight="SemiBold" Text="Fight for the top of the stack" />
+                        <TextBlock Style="{StaticResource RowCaption}"
+                                   Text="Re-asserts always-on-top every 1.5 s. Leave this on for games." />
+                    </StackPanel>
+                </ui:CardControl.Header>
+                <ui:ToggleSwitch x:Name="ChkAggressive" Checked="Toggle_Changed" Unchecked="Toggle_Changed" />
+            </ui:CardControl>
+
+            <ui:CardControl Margin="0,0,0,4">
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="Keyboard24" />
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock FontWeight="SemiBold" Text="Never steal keyboard focus" />
+                        <TextBlock Style="{StaticResource RowCaption}"
+                                   Text="Clicking the overlay will not pull focus out of a borderless game — but you cannot type into the page either." />
+                    </StackPanel>
+                </ui:CardControl.Header>
+                <ui:ToggleSwitch x:Name="ChkNoActivate" Checked="Toggle_Changed" Unchecked="Toggle_Changed" />
+            </ui:CardControl>
+
+            <ui:CardControl Margin="0,0,0,4">
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="Cursor24" />
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock FontWeight="SemiBold" Text="Click-through" />
+                        <TextBlock Style="{StaticResource RowCaption}"
+                                   Text="The mouse passes straight through to whatever is underneath." />
+                    </StackPanel>
+                </ui:CardControl.Header>
+                <ui:ToggleSwitch x:Name="ChkClickThrough" Checked="Toggle_Changed" Unchecked="Toggle_Changed" />
+            </ui:CardControl>
+
+            <ui:CardControl Margin="0,0,0,4">
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="EyeOff24" />
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock FontWeight="SemiBold" Text="Hide the toolbar until I hover" />
+                    </StackPanel>
+                </ui:CardControl.Header>
+                <ui:ToggleSwitch x:Name="ChkAutoHide" Checked="Toggle_Changed" Unchecked="Toggle_Changed" />
+            </ui:CardControl>
+
+            <ui:CardControl>
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="Layer24" />
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock FontWeight="SemiBold" Text="Opacity" />
+                        <TextBlock x:Name="OpacityLabel" Style="{StaticResource RowCaption}" />
+                    </StackPanel>
+                </ui:CardControl.Header>
+                <Slider x:Name="OpacityControl" Width="180" Minimum="0.2" Maximum="1.0"
+                        SmallChange="0.05" VerticalAlignment="Center"
+                        ValueChanged="Opacity_ValueChanged" />
+            </ui:CardControl>
+
+            <ui:InfoBar Margin="0,20,0,0" IsOpen="True" IsClosable="False" Severity="Informational"
+                        Title="Exclusive full-screen"
+                        Message="An overlay can only sit above a game running in windowed or borderless mode. In exclusive full-screen, Windows hands the display straight to the game and hides every other window — no application can draw over that without hooking the game's renderer, which anti-cheat treats as tampering. Set your game to Borderless and the overlay works." />
+        </StackPanel>
+    </ScrollViewer>
+</Page>

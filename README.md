@@ -16,15 +16,24 @@ Perch is a small Windows tray app that does three things well:
 Built for wide and multi-monitor desktops, where there is plenty of screen left over
 while a game runs.
 
-![Perch — pin a window](docs/pin-tab.png)
+![Perch — pin a window](docs/fluent-pin.png)
 
 ---
 
 ## Install
 
-Download `Perch.exe` from the [latest release](../../releases/latest) and run it. There is
-no installer and nothing to set up: Perch lives in the tray, and its settings go in
-`%APPDATA%\Perch\config.json`.
+Download **`PerchSetup-x.y.z.exe`** from the [latest release](../../releases/latest) and
+run it. It installs into your own profile, so Windows never asks for administrator
+rights, and it appears in Settings → Apps like anything else.
+
+There is also a portable **`Perch.exe`** in the same release if you would rather not
+install anything — a single self-contained file you can run from anywhere.
+
+Windows SmartScreen will warn you the first time, because the build is not code-signed
+(a certificate costs a few hundred euros a year). Choose **More info → Run anyway**, or
+build it yourself from source with the steps below.
+
+Settings live in `%APPDATA%\Perch\config.json`; the uninstaller offers to remove them.
 
 The built-in viewer uses the Microsoft Edge **WebView2 Runtime**, which ships with
 Windows 10 and 11. If it is missing, Perch says so and everything else still works.
@@ -93,11 +102,14 @@ Requires the [.NET 9 SDK](https://dotnet.microsoft.com/download).
 dotnet build src/Perch/Perch.csproj -c Release
 ```
 
-For a single self-contained `Perch.exe` that runs without .NET installed:
+For the installer and the portable build, which is what a release ships:
 
-```bash
-dotnet publish src/Perch/Perch.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
+```powershell
+winget install JRSoftware.InnoSetup
+./installer/build-installer.ps1 -Version 1.1.0
 ```
+
+Both land in `dist/`.
 
 ### Layout
 
@@ -106,8 +118,10 @@ src/Perch/
   Interop/      P/Invoke and the "is this a real window?" rules
   Models/       Config shapes
   Services/     Pinning, placement rules, hotkeys, monitors, tray, config
-  Views/        WPF windows (main, overlay, rule editor, app picker)
-  Assets/       Theme and icon
+  Views/        Windows (main, overlay, rule editor, app picker)
+  Views/Pages/  The four pages behind the navigation pane
+  Assets/       Application icon
+installer/      Inno Setup script and the build script that drives it
 ```
 
 The parts worth knowing about:
@@ -118,6 +132,12 @@ The parts worth knowing about:
 - **`PinService`** re-asserts topmost on a timer rather than setting it once.
 - **`OverlayWindow`** is layered (`WS_EX_LAYERED`) rather than using WPF's
   `AllowsTransparency`, because WebView2 cannot render into a transparent WPF window.
+- **`StartupService`** compares the whole Run command, not just whether an entry exists,
+  so installing or moving Perch does not leave autostart pointing at a stale path.
+
+The interface is WinUI-style Fluent through [WPF-UI](https://github.com/lepoco/wpfui):
+Mica backdrop, the system accent colour, and the light/dark theme the rest of Windows
+is using.
 
 ## Licence
 

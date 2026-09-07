@@ -1,0 +1,99 @@
+﻿<Page x:Class="Perch.Views.Pages.RulesPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Title="Placement rules">
+
+    <Grid Margin="0,0,16,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="Placement rules" Style="{StaticResource PageTitle}" />
+            <TextBlock Style="{StaticResource Lede}"
+                   Text="Send an app to the monitor it belongs on, every time it opens. Discord maximised on monitor 2, for example." />
+        </StackPanel>
+
+        <ui:CardControl Grid.Row="1" Margin="0,0,0,16">
+            <ui:CardControl.Icon>
+                <ui:SymbolIcon Symbol="DualScreen24" />
+            </ui:CardControl.Icon>
+            <ui:CardControl.Header>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock FontWeight="SemiBold" Text="Watch for windows opening" />
+                    <TextBlock x:Name="RulesState" Style="{StaticResource RowCaption}" />
+                </StackPanel>
+            </ui:CardControl.Header>
+
+            <StackPanel Orientation="Horizontal">
+                <ui:Button Content="Apply now" Click="ApplyAll_Click" Margin="0,0,8,0" />
+                <ui:Button Content="New rule" Appearance="Primary" Click="NewRule_Click" Margin="0,0,12,0">
+                    <ui:Button.Icon>
+                        <ui:SymbolIcon Symbol="Add24" />
+                    </ui:Button.Icon>
+                </ui:Button>
+                <ui:ToggleSwitch x:Name="ChkRulesEnabled" VerticalAlignment="Center"
+                                 Checked="RulesEnabled_Changed" Unchecked="RulesEnabled_Changed" />
+            </StackPanel>
+        </ui:CardControl>
+
+        <Grid Grid.Row="2">
+            <StackPanel x:Name="EmptyState" VerticalAlignment="Center" HorizontalAlignment="Center"
+                        Margin="0,0,0,40">
+                <ui:SymbolIcon Symbol="DualScreen24" FontSize="40" HorizontalAlignment="Center"
+                               Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                <TextBlock Text="No rules yet" FontSize="16" FontWeight="SemiBold" Margin="0,12,0,0"
+                           HorizontalAlignment="Center"
+                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                <TextBlock Text="Create one and pick the app from the list of what is running."
+                           Style="{StaticResource RowCaption}" HorizontalAlignment="Center" />
+            </StackPanel>
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ItemsControl x:Name="RuleList">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="8"
+                                    Padding="14,12" Margin="0,0,0,6">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <ui:ToggleSwitch Grid.Column="0" VerticalAlignment="Center" Margin="0,0,14,0"
+                                                     IsChecked="{Binding Rule.Enabled, Mode=TwoWay}"
+                                                     Checked="RuleEnabled_Changed" Unchecked="RuleEnabled_Changed" />
+
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,12,0">
+                                        <TextBlock Text="{Binding Headline}" Style="{StaticResource RowTitle}" />
+                                        <TextBlock Text="{Binding Detail}" Style="{StaticResource RowCaption}" />
+                                    </StackPanel>
+
+                                    <ui:Button Grid.Column="2" Content="Apply now" Tag="{Binding}"
+                                               Click="ApplyRule_Click" Margin="0,0,6,0" />
+                                    <ui:Button Grid.Column="3" Content="Edit" Tag="{Binding}"
+                                               Click="EditRule_Click" Margin="0,0,6,0" />
+                                    <ui:Button Grid.Column="4" Tag="{Binding}" Click="DeleteRule_Click"
+                                               ToolTip="Delete rule">
+                                        <ui:Button.Icon>
+                                            <ui:SymbolIcon Symbol="Delete24" />
+                                        </ui:Button.Icon>
+                                    </ui:Button>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</Page>
