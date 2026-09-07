@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -6,21 +6,22 @@ using Brush = System.Windows.Media.Brush;
 using System.Windows.Threading;
 using Perch.Interop;
 using Perch.Services;
-using Wpf.Ui.Controls;
 using Button = Wpf.Ui.Controls.Button;
 
 namespace Perch.Views.Pages;
 
 public partial class PinPage : Page
 {
-    private readonly ObservableCollection<WindowRow> _windows = new();
+    private readonly ObservableCollection<WindowRow> _pinned = new();
+    private readonly ObservableCollection<WindowRow> _other = new();
     private readonly DispatcherTimer _refresh;
 
     public PinPage()
     {
         InitializeComponent();
 
-        WindowList.ItemsSource = _windows;
+        PinnedList.ItemsSource = _pinned;
+        OtherList.ItemsSource = _other;
 
         _refresh = new DispatcherTimer(DispatcherPriority.Background)
         {
@@ -30,8 +31,9 @@ public partial class PinPage : Page
 
         Loaded += (_, _) =>
         {
-            PinHotkeyLabel.Text =
-                $"Or press {App.Config.Config.Hotkeys.TogglePinForeground} while the window is in front.";
+            var keys = App.Config.Config.Hotkeys;
+            PinKeyLabel.Text = keys.TogglePinForeground;
+            UnpinKeyLabel.Text = keys.UnpinAll;
             Refresh();
             _refresh.Start();
         };
@@ -41,21 +43,35 @@ public partial class PinPage : Page
 
     private void Refresh()
     {
-        _windows.Clear();
+        var query = Filter.Text.Trim();
 
         var rows = WindowInfo.EnumerateUserWindows()
+            .Where(w => Matches(w, query))
             .Select(w => new WindowRow(w, PinService.IsOnTop(w.Handle)))
-            .OrderByDescending(w => w.IsPinned)
             .ToList();
 
-        foreach (var row in rows) _windows.Add(row);
+        Fill(_pinned, rows.Where(r => r.IsPinned));
+        Fill(_other, rows.Where(r => !r.IsPinned));
 
-        PinnedCount.Text = rows.Count(r => r.IsPinned) switch
-        {
-            0 => "No windows pinned",
-            1 => "1 window pinned",
-            var n => $"{n} windows pinned"
-        };
+        PinnedNumber.Text = _pinned.Count.ToString();
+        PinnedCaption.Text = _pinned.Count == 1 ? "window on top" : "windows on top";
+
+        PinnedSection.Visibility = _pinned.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+        OtherLabel.Visibility = _other.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+        EmptyState.Visibility = rows.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+        UnpinAllButton.IsEnabled = _pinned.Count > 0;
+    }
+
+    private static bool Matches(WindowInfo window, string query) =>
+        query.Length == 0 ||
+        window.ProcessName.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+        window.Title.Contains(query, StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>Replace the contents without rebuilding the collection object itself.</summary>
+    private static void Fill(ObservableCollection<WindowRow> target, IEnumerable<WindowRow> rows)
+    {
+        target.Clear();
+        foreach (var row in rows) target.Add(row);
     }
 
     private void TogglePin_Click(object sender, RoutedEventArgs e)
@@ -69,12 +85,14 @@ public partial class PinPage : Page
 
     private void Refresh_Click(object sender, RoutedEventArgs e) => Refresh();
 
+    private void Filter_TextChanged(object sender, TextChangedEventArgs e) => Refresh();
+
     private void UnpinAll_Click(object sender, RoutedEventArgs e)
     {
         App.Pins.UnpinAll();
 
         // Also release anything left on top by a previous Perch session.
-        foreach (var row in _windows.Where(r => PinService.IsOnTop(r.Handle)).ToList())
+        foreach (var row in _pinned.ToList())
             App.Pins.Unpin(row.Handle);
 
         Refresh();
@@ -90,10 +108,12 @@ public sealed class WindowRow
     {
         _info = info;
         IsPinned = isPinned;
+        Icon = IconService.ForProcess(info.ProcessId);
     }
 
     public IntPtr Handle => _info.Handle;
     public bool IsPinned { get; }
+    public ImageSource? Icon { get; }
 
     public string Title => string.IsNullOrWhiteSpace(_info.Title) ? _info.ProcessName : _info.Title;
 
@@ -107,16 +127,14 @@ public sealed class WindowRow
         }
     }
 
-    public SymbolRegular Glyph => IsPinned ? SymbolRegular.Pin24 : SymbolRegular.Window24;
+    /// <summary>Shown only when the executable would not give up its icon.</summary>
+    public Visibility FallbackGlyphVisibility => Icon is null ? Visibility.Visible : Visibility.Collapsed;
 
-    public Brush GlyphBrush => IsPinned
-        ? (Brush)System.Windows.Application.Current.Resources["AccentTextFillColorPrimaryBrush"]
-        : (Brush)System.Windows.Application.Current.Resources["TextFillColorTertiaryBrush"];
+    public Visibility PinnedBadgeVisibility => IsPinned ? Visibility.Visible : Visibility.Collapsed;
 
     public string ActionLabel => IsPinned ? "Unpin" : "Pin on top";
 
-    // A list of rows is not the place for a wall of accent-coloured buttons; Windows
-    // reserves the accent for a single primary action per view. The pin glyph carries
-    // the state instead.
-    public ControlAppearance ActionAppearance => ControlAppearance.Secondary;
+    /// <summary>Accent down the left edge marks the rows Perch is actually holding.</summary>
+    public Brush StripeBrush => (Brush)System.Windows.Application.Current.Resources[
+        IsPinned ? "Shell.Accent" : "Shell.Line"];
 }

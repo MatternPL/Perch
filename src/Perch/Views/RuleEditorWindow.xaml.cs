@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 using Perch.Models;
 using Perch.Services;
 using Wpf.Ui.Controls;
@@ -22,7 +22,7 @@ public partial class RuleEditorWindow : FluentWindow
 
         ProcessBox.TextChanged += (_, _) => UpdatePreview();
         TitleBox.TextChanged += (_, _) => UpdatePreview();
-        MonitorCombo.SelectionChanged += (_, _) => UpdatePreview();
+        Map.SelectionChanged += _ => UpdatePreview();
         StateCombo.SelectionChanged += (_, _) => UpdatePreview();
         ChkAlwaysOnTop.Checked += (_, _) => UpdatePreview();
         ChkAlwaysOnTop.Unchecked += (_, _) => UpdatePreview();
@@ -31,10 +31,11 @@ public partial class RuleEditorWindow : FluentWindow
     private void Fill()
     {
         _monitors = MonitorService.GetMonitors();
-        MonitorCombo.ItemsSource = _monitors;
+        Map.IsSelectable = true;
+        Map.Load(_monitors);
 
         var current = MonitorService.Resolve(_rule.MonitorDeviceName, _rule.MonitorIndex);
-        MonitorCombo.SelectedItem = current ?? _monitors.FirstOrDefault();
+        Map.SelectedDeviceName = (current ?? _monitors.FirstOrDefault())?.DeviceName;
 
         ProcessBox.Text = _rule.ProcessName;
         TitleBox.Text = _rule.TitleContains;
@@ -64,7 +65,7 @@ public partial class RuleEditorWindow : FluentWindow
         if (PreviewBar is null) return;
 
         var process = string.IsNullOrWhiteSpace(ProcessBox.Text) ? "the app" : ProcessBox.Text.Trim();
-        var monitor = MonitorCombo.SelectedItem as MonitorTarget;
+        var monitor = Map.Selected;
         var where = monitor is null ? "the selected monitor" : $"monitor {monitor.Index}";
 
         var state = SelectedState switch
@@ -94,8 +95,7 @@ public partial class RuleEditorWindow : FluentWindow
         var monitor = MonitorService.FromWindow(picker.Selected.Handle);
         if (monitor is not null)
         {
-            var match = _monitors.FirstOrDefault(m => m.DeviceName == monitor.DeviceName);
-            if (match is not null) MonitorCombo.SelectedItem = match;
+            Map.SelectedDeviceName = monitor.DeviceName;
         }
 
         UpdatePreview();
@@ -113,7 +113,7 @@ public partial class RuleEditorWindow : FluentWindow
             return;
         }
 
-        if (MonitorCombo.SelectedItem is not MonitorTarget monitor)
+        if (Map.Selected is not { } monitor)
         {
             ShowError("Pick a monitor.");
             return;

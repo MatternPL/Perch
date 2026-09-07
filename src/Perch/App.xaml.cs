@@ -1,9 +1,12 @@
 ﻿using System.Threading;
 using System.Windows;
+using System.Windows.Media;
 using Perch.Interop;
 using Perch.Services;
 using Perch.Views;
+using Wpf.Ui.Appearance;
 using Application = System.Windows.Application;
+using Color = System.Windows.Media.Color;
 using MessageBox = System.Windows.MessageBox;
 
 namespace Perch;
@@ -12,6 +15,14 @@ public partial class App : Application
 {
     private const string InstanceMutexName = @"Global\Perch.SingleInstance";
     private const string ShowWindowEventName = @"Global\Perch.ShowWindow";
+
+    /// <summary>
+    /// Perch's own accent rather than the system one, and the same blue Brisk uses:
+    /// these are the same person's tools and they should read as a set. It also has to
+    /// be set here, not just in the resource dictionary, because WPF-UI derives the
+    /// toggle and primary-button colours from this one value.
+    /// </summary>
+    public static readonly Color AccentColor = Color.FromRgb(0x4C, 0x8D, 0xFF);
 
     private Mutex? _instanceMutex;
     private EventWaitHandle? _showWindowEvent;
@@ -23,7 +34,6 @@ public partial class App : Application
     public static HotkeyService Hotkeys { get; private set; } = null!;
     public static TrayIcon Tray { get; private set; } = null!;
 
-    public static OverlayWindow? Overlay { get; set; }
     public static MainWindow? MainView { get; set; }
 
     protected override void OnStartup(StartupEventArgs e)
@@ -45,6 +55,8 @@ public partial class App : Application
                 "Perch", MessageBoxButton.OK, MessageBoxImage.Warning);
             args.Handled = true;
         };
+
+        ApplicationAccentColorManager.Apply(AccentColor, ApplicationTheme.Dark);
 
         Config = new ConfigService();
         Config.Load();
@@ -90,45 +102,22 @@ public partial class App : Application
             Tray.Notify(result.Value ? "Pinned on top" : "Unpinned", Trim(title));
         });
 
-        Hotkeys.Register("overlay", keys.ToggleOverlay, ToggleOverlay);
-
-        Hotkeys.Register("clickthrough", keys.ToggleClickThrough, () =>
+        Hotkeys.Register("unpinall", keys.UnpinAll, () =>
         {
-            if (Overlay is null) return;
-            Overlay.SetClickThrough(!Config.Config.Overlay.ClickThrough);
-        });
+            if (Pins.Count == 0)
+            {
+                Tray.Notify("Nothing pinned", "No window is being held on top.");
+                return;
+            }
 
+            var count = Pins.Count;
+            Pins.UnpinAll();
+            Tray.Notify("Unpinned", $"{count} window(s) back to normal stacking.");
+        });
     }
 
     private static string Trim(string text) =>
         text.Length > 60 ? text[..57] + "..." : text;
-
-    public static void ToggleOverlay()
-    {
-        if (Overlay is { IsLoaded: true })
-        {
-            Overlay.Close();
-            return;
-        }
-
-        ShowOverlay();
-    }
-
-    public static void ShowOverlay(string? url = null)
-    {
-        if (Overlay is { IsLoaded: true })
-        {
-            if (url is not null) Overlay.Navigate(url);
-            Overlay.Activate();
-            return;
-        }
-
-        Overlay = new OverlayWindow();
-        Overlay.Closed += (_, _) => Overlay = null;
-        Overlay.Show();
-
-        if (url is not null) Overlay.Navigate(url);
-    }
 
     public static void ShowMainWindow()
     {

@@ -1,7 +1,4 @@
-﻿using System.Diagnostics;
-using System.IO;
-using System.Reflection;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Perch.Services;
@@ -25,14 +22,10 @@ public partial class SettingsPage : Page
         {
             _loading = true;
 
-            var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "1.0.0";
-            VersionLabel.Text = $"Perch {version}";
-            ConfigPathLabel.Text = App.Config.FilePath;
 
             var keys = App.Config.Config.Hotkeys;
             HkPin.Text = keys.TogglePinForeground;
-            HkOverlay.Text = keys.ToggleOverlay;
-            HkClickThrough.Text = keys.ToggleClickThrough;
+            HkUnpinAll.Text = keys.UnpinAll;
 
             var general = App.Config.Config.General;
             ChkStartWithWindows.IsChecked = general.StartWithWindows;
@@ -74,8 +67,7 @@ public partial class SettingsPage : Page
         switch ((string)box.Tag)
         {
             case "pin": keys.TogglePinForeground = gesture; break;
-            case "overlay": keys.ToggleOverlay = gesture; break;
-            case "clickthrough": keys.ToggleClickThrough = gesture; break;
+            case "unpinall": keys.UnpinAll = gesture; break;
         }
 
         App.Config.Save();
@@ -114,30 +106,5 @@ public partial class SettingsPage : Page
         }
 
         App.Config.Save();
-    }
-
-    private void OpenConfigFolder_Click(object sender, RoutedEventArgs e) => Open(App.Config.Directory);
-
-    private void OpenLog_Click(object sender, RoutedEventArgs e)
-    {
-        if (!File.Exists(Log.Path))
-        {
-            MainWindow.Say("No log yet", "Perch has not had anything worth writing down.");
-            return;
-        }
-
-        Open(Log.Path);
-    }
-
-    private static void Open(string path)
-    {
-        try
-        {
-            Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
-        }
-        catch (Exception ex)
-        {
-            Log.Warn($"Could not open {path}: {ex.Message}");
-        }
     }
 }

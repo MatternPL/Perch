@@ -59,6 +59,15 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 [Tasks]
 Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Shortcuts:"; Flags: unchecked
 
+[InstallDelete]
+; A self-contained publish is a flat pile of assemblies, and Inno only overwrites the
+; files it is shipping. Clearing them first means an upgrade never leaves a stale DLL
+; behind from a dependency that has since been dropped. The uninstaller is an .exe/.dat
+; and is deliberately not matched here.
+Type: filesandordirs; Name: "{app}\runtimes"
+Type: files; Name: "{app}\*.dll"
+Type: files; Name: "{app}\*.json"
+
 [Files]
 Source: "{#PayloadDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 

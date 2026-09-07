@@ -1,12 +1,11 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Perch.Models;
 
 public sealed class AppConfig
 {
-    public int Version { get; set; } = 1;
+    public int Version { get; set; } = 2;
     public GeneralSettings General { get; set; } = new();
-    public OverlaySettings Overlay { get; set; } = new();
     public HotkeySettings Hotkeys { get; set; } = new();
     public List<WindowRule> Rules { get; set; } = new();
 }
@@ -16,48 +15,13 @@ public sealed class GeneralSettings
     public bool StartWithWindows { get; set; }
     public bool StartMinimized { get; set; }
     public bool RulesEnabled { get; set; } = true;
-    /// <summary>Re-apply a rule every time the window is shown, not just the first time.</summary>
     public bool ShowTrayNotifications { get; set; } = true;
-}
-
-public sealed class OverlaySettings
-{
-    public string Url { get; set; } = "https://www.youtube.com";
-
-    /// <summary>Null until the overlay has been placed once. Not NaN — System.Text.Json refuses to write that.</summary>
-    public double? Left { get; set; }
-    public double? Top { get; set; }
-    public double Width { get; set; } = 640;
-    public double Height { get; set; } = 380;
-
-
-    /// <summary>Mouse events pass straight through to the game underneath.</summary>
-    public bool ClickThrough { get; set; }
-
-    /// <summary>Never take keyboard focus, so clicking it cannot minimise a borderless game.</summary>
-    public bool NoActivate { get; set; }
-
-    /// <summary>Re-assert topmost on a timer; some games grab the top of the z-order on their own.</summary>
-    public bool AggressiveTopmost { get; set; } = true;
-
-    /// <summary>Hide the toolbar until the mouse is over the overlay.</summary>
-    public bool AutoHideToolbar { get; set; } = true;
-
-    public bool MuteOnHide { get; set; }
-
-    public List<string> Bookmarks { get; set; } = new()
-    {
-        "https://www.youtube.com",
-        "https://www.twitch.tv"
-    };
 }
 
 public sealed class HotkeySettings
 {
     public string TogglePinForeground { get; set; } = "Ctrl+Alt+P";
-    public string ToggleOverlay { get; set; } = "Ctrl+Alt+O";
-    public string ToggleClickThrough { get; set; } = "Ctrl+Alt+C";
-
+    public string UnpinAll { get; set; } = "Ctrl+Alt+U";
 }
 
 public enum TargetWindowState

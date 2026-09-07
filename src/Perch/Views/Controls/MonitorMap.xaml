@@ -1,0 +1,10 @@
+<UserControl x:Class="Perch.Views.Controls.MonitorMap"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             MinHeight="120">
+    <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1" CornerRadius="8" Padding="14">
+        <Canvas x:Name="Surface" ClipToBounds="True" />
+    </Border>
+</UserControl>

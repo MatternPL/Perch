@@ -1,6 +1,9 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using Brush = System.Windows.Media.Brush;
+using Perch.Interop;
 using Perch.Models;
 using Perch.Services;
 using Wpf.Ui.Controls;
@@ -29,6 +32,7 @@ public partial class RulesPage : Page
             ChkRulesEnabled.IsChecked = App.Config.Config.General.RulesEnabled;
             _loading = false;
 
+            Map.Reload();
             UpdateState();
             Refresh();
         };
@@ -40,12 +44,28 @@ public partial class RulesPage : Page
         foreach (var rule in App.Config.Config.Rules) _rules.Add(new RuleRow(rule));
 
         EmptyState.Visibility = _rules.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+        RulesLabel.Visibility = _rules.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+
+        UpdateState();
     }
 
-    private void UpdateState() =>
-        RulesState.Text = App.Rules.IsRunning
-            ? "Running — new windows are matched as they open."
-            : "Paused — nothing is being moved.";
+    private void UpdateState()
+    {
+        var count = App.Config.Config.Rules.Count(r => r.Enabled);
+        var running = App.Rules.IsRunning;
+
+        RulesHeadline.Text = running ? "Watching" : "Paused";
+        StateStripe.Fill = (System.Windows.Media.Brush)FindResource(running ? "Shell.Good" : "Shell.Muted");
+
+        RulesState.Text = running
+            ? count switch
+            {
+                0 => "No active rules, so nothing is being moved yet.",
+                1 => "1 active rule. New windows are matched as they open.",
+                _ => $"{count} active rules. New windows are matched as they open."
+            }
+            : "Windows are left wherever they open.";
+    }
 
     private void NewRule_Click(object sender, RoutedEventArgs e)
     {
@@ -134,6 +154,18 @@ public sealed class RuleRow
     public WindowRule Rule { get; }
 
     public string Headline => Rule.DisplayName;
+
+    /// <summary>Taken from a running instance when there is one; a rule can name an app that is closed.</summary>
+    public ImageSource? Icon => WindowInfo.EnumerateUserWindows()
+        .Where(w => string.Equals(w.ProcessName, Rule.ProcessName, StringComparison.OrdinalIgnoreCase))
+        .Select(w => IconService.ForProcess(w.ProcessId))
+        .FirstOrDefault(i => i is not null);
+
+    public Visibility FallbackGlyphVisibility => Icon is null ? Visibility.Visible : Visibility.Collapsed;
+
+    /// <summary>A disabled rule keeps its row but loses the accent.</summary>
+    public Brush StripeBrush => (Brush)System.Windows.Application.Current.Resources[
+        Rule.Enabled ? "Shell.Accent" : "Shell.Line"];
 
     public string Detail
     {

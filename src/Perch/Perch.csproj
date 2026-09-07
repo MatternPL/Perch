@@ -11,7 +11,7 @@
     <AssemblyName>Perch</AssemblyName>
     <RootNamespace>Perch</RootNamespace>
     <ApplicationIcon>Assets\perch.ico</ApplicationIcon>
-    <Version>1.1.1</Version>
+    <Version>2.0.0</Version>
     <Product>Perch</Product>
     <Company>Perch</Company>
     <Description>Keep any window on top, and make apps open where they belong.</Description>
@@ -21,7 +21,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3351.48" />
     <PackageReference Include="WPF-UI" Version="4.3.0" />
   </ItemGroup>
 

@@ -1,7 +1,8 @@
-<ui:FluentWindow x:Class="Perch.Views.RuleEditorWindow"
+﻿<ui:FluentWindow x:Class="Perch.Views.RuleEditorWindow"
                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                 xmlns:controls="clr-namespace:Perch.Views.Controls"
                  Title="Rule"
                  Width="560" Height="640"
                  ResizeMode="NoResize"
@@ -42,7 +43,9 @@
                            Text="Useful when one app opens several windows and you only want to move one of them." />
 
                 <TextBlock Text="Send it to" Style="{StaticResource GroupLabel}" />
-                <ComboBox x:Name="MonitorCombo" DisplayMemberPath="Label" HorizontalAlignment="Stretch" />
+                <TextBlock Style="{StaticResource RowCaption}" Margin="0,-4,0,8"
+                           Text="Click the screen you want it on." />
+                <controls:MonitorMap x:Name="Map" Height="130" />
 
                 <TextBlock Text="And make it" Style="{StaticResource GroupLabel}" />
                 <ComboBox x:Name="StateCombo" HorizontalAlignment="Stretch">

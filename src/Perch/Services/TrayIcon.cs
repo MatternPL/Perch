@@ -1,4 +1,4 @@
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows;
 using System.Windows.Forms;
 using Application = System.Windows.Application;
@@ -32,7 +32,6 @@ public sealed class TrayIcon : IDisposable
         };
 
         menu.Items.Add("Open Perch", null, (_, _) => App.ShowMainWindow());
-        menu.Items.Add("Toggle overlay", null, (_, _) => App.ToggleOverlay());
         menu.Items.Add("Unpin all windows", null, (_, _) => App.Pins.UnpinAll());
         menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add("Exit", null, (_, _) => App.ExitApp());
