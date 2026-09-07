@@ -17,6 +17,11 @@ public sealed class WindowRuleService : IDisposable
 {
     private static readonly int[] RetryDelaysMs = { 0, 250, 700, 1500, 2500 };
 
+    // Sign-in is slow and uneven: apps are still unpacking themselves while Perch is
+    // already up. Sweeping a few times over the first quarter minute costs one window
+    // enumeration each and catches the ones that were not ready on the first pass.
+    private static readonly int[] CatchUpDelaysMs = { 0, 2000, 6000, 15000 };
+
     private readonly ConfigService _config;
     private readonly Dispatcher _dispatcher;
     private readonly Native.WinEventProc _callback;   // kept alive for the lifetime of the hook
@@ -63,8 +68,37 @@ public sealed class WindowRuleService : IDisposable
         Log.Info("Window rules stopped.");
     }
 
+    /// <summary>
+    /// Catches up on windows that were already open when Perch started.
+    ///
+    /// The hook only reports windows that appear from now on, so anything that opened
+    /// during sign-in — before Perch was running — would otherwise never be placed, no
+    /// matter how fast Perch starts. Sweeping repeatedly over the first few seconds also
+    /// covers apps that had created their window but not finished showing it.
+    /// </summary>
+    public void CatchUpAfterStart()
+    {
+        foreach (var delay in CatchUpDelaysMs)
+        {
+            var ms = delay;
+            _ = _dispatcher.BeginInvoke(async () =>
+            {
+                if (ms > 0) await Task.Delay(ms);
+                if (!IsRunning) return;
+
+                var moved = ApplyToExistingWindows(markHandled: true);
+                if (moved > 0)
+                    Log.Info($"Catch-up placed {moved} window(s) that were already open.");
+            }, DispatcherPriority.Background);
+        }
+    }
+
     /// <summary>Runs every enabled rule against the windows that are already open.</summary>
-    public int ApplyToExistingWindows()
+    /// <param name="markHandled">
+    /// Remember what was placed, so an "apply once" rule does not fire again when the
+    /// same window later raises a show event.
+    /// </param>
+    public int ApplyToExistingWindows(bool markHandled = false)
     {
         var applied = 0;
 
@@ -72,6 +106,12 @@ public sealed class WindowRuleService : IDisposable
         {
             var rule = FindMatch(window);
             if (rule is null) continue;
+
+            if (markHandled)
+            {
+                if (_recentlyHandled.ContainsKey(window.Handle)) continue;
+                _recentlyHandled[window.Handle] = DateTime.UtcNow;
+            }
 
             ApplyWithRetries(rule, window);
             applied++;

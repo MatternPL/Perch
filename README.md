@@ -52,6 +52,14 @@ Windows 10 (1809 or newer) and Windows 11, 64-bit. Nothing else to install.
 Settings live in `%APPDATA%\Perch\config.json` as plain JSON. The uninstaller offers to
 remove them; it never does so silently.
 
+### Apps that were already open
+
+Perch is told about windows as they appear, which says nothing about the ones that opened
+before it was running — and at sign-in that is most of them. So on startup it also sweeps
+whatever is already on screen and places anything a rule matches, repeating over the first
+fifteen seconds because apps are still unpacking themselves at that point. It does not
+matter whether Discord or Perch wins the race to start.
+
 ### Why the rules retry
 
 Most apps create their window, then move and resize it a beat later while they restore

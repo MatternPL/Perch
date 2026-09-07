@@ -71,7 +71,13 @@ public partial class App : Application
         RegisterHotkeys();
 
         if (Config.Config.General.RulesEnabled)
+        {
             Rules.Start();
+
+            // Whatever opened before Perch got here still has to end up in the right
+            // place — at sign-in that is most of what the rules are for.
+            Rules.CatchUpAfterStart();
+        }
 
         Tray = new TrayIcon();
         Tray.Initialize();
