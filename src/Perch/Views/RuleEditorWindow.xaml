@@ -1,0 +1,94 @@
+﻿<ui:FluentWindow x:Class="Perch.Views.RuleEditorWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                 xmlns:controls="clr-namespace:Perch.Views.Controls"
+                 Title="Rule"
+                 Width="560" Height="640"
+                 ResizeMode="NoResize"
+                 WindowStartupLocation="CenterOwner"
+                 ShowInTaskbar="False"
+                 ExtendsContentIntoTitleBar="True"
+                 WindowBackdropType="Mica"
+                 WindowCornerPreference="Round">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar x:Name="Bar" Grid.Row="0" Title="New rule" ShowMaximize="False" ShowMinimize="False" />
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="20,4,20,10">
+            <StackPanel>
+
+                <TextBlock Text="Application" Style="{StaticResource GroupLabel}" Margin="2,0,0,8" />
+                <Grid Margin="0,0,0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <ui:TextBox x:Name="ProcessBox" Grid.Column="0" PlaceholderText="Discord" />
+                    <ui:Button Grid.Column="1" Content="Pick running app" Margin="8,0,0,0"
+                               Click="PickApp_Click" />
+                </Grid>
+                <TextBlock Style="{StaticResource RowCaption}" TextWrapping="Wrap"
+                           Text="Process name without .exe, for example Discord." />
+
+                <TextBlock Text="Only when the title contains" Style="{StaticResource GroupLabel}" />
+                <ui:TextBox x:Name="TitleBox" PlaceholderText="Optional" Margin="0,0,0,6" />
+                <TextBlock Style="{StaticResource RowCaption}" TextWrapping="Wrap"
+                           Text="Leave empty to match every window from the app." />
+
+                <TextBlock Text="Send it to" Style="{StaticResource GroupLabel}" />
+                <TextBlock Style="{StaticResource RowCaption}" Margin="0,-4,0,8"
+                           Text="Click a monitor." />
+                <controls:MonitorMap x:Name="Map" Height="130" />
+
+                <TextBlock Text="And make it" Style="{StaticResource GroupLabel}" />
+                <ComboBox x:Name="StateCombo" HorizontalAlignment="Stretch">
+                    <ComboBoxItem Content="Maximised" />
+                    <ComboBoxItem Content="Windowed, centred on that monitor" />
+                    <ComboBoxItem Content="Minimised" />
+                </ComboBox>
+
+                <TextBlock Text="Extras" Style="{StaticResource GroupLabel}" />
+
+                <ui:CardControl Margin="0,0,0,4">
+                    <ui:CardControl.Header>
+                        <TextBlock VerticalAlignment="Center" Text="Keep on top" />
+                    </ui:CardControl.Header>
+                    <ui:ToggleSwitch x:Name="ChkAlwaysOnTop" />
+                </ui:CardControl>
+
+                <ui:CardControl>
+                    <ui:CardControl.Header>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="Only when the window first opens" />
+                            <TextBlock Style="{StaticResource RowCaption}" TextWrapping="Wrap"
+                                       Text="You can still move it afterwards." />
+                        </StackPanel>
+                    </ui:CardControl.Header>
+                    <ui:ToggleSwitch x:Name="ChkApplyOnce" />
+                </ui:CardControl>
+
+                <ui:InfoBar x:Name="PreviewBar" Margin="0,20,0,0" IsOpen="True" IsClosable="False"
+                            Severity="Informational" Title="Summary" />
+
+                <ui:InfoBar x:Name="ErrorBar" Margin="0,8,0,0" IsOpen="False" IsClosable="True"
+                            Severity="Error" Title="Cannot save yet" />
+            </StackPanel>
+        </ScrollViewer>
+
+        <Border Grid.Row="2" Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="0,1,0,0"
+                Padding="20,14">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <ui:Button Content="Cancel" Click="Cancel_Click" Margin="0,0,10,0" MinWidth="90" />
+                <ui:Button Content="Save rule" Appearance="Primary" Click="Save_Click" MinWidth="110" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</ui:FluentWindow>

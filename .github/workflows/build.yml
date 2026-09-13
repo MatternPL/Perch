@@ -1,0 +1,39 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore
+        run: dotnet restore src/Perch/Perch.csproj
+
+      - name: Build
+        run: dotnet build src/Perch/Perch.csproj -c Release --no-restore
+
+      - name: Ensure Inno Setup
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { choco install innosetup -y --no-progress }
+
+      - name: Build installer and portable build
+        shell: pwsh
+        run: ./installer/build-installer.ps1
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Perch
+          path: dist/*

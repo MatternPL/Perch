@@ -1,0 +1,142 @@
+<Page x:Class="Perch.Views.Pages.SettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Title="Settings">
+
+    <Page.Resources>
+        <Style x:Key="SettingRow" TargetType="Border" BasedOn="{StaticResource Row}">
+            <Setter Property="Margin" Value="0,0,0,4" />
+        </Style>
+    </Page.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="0,0,28,20">
+
+            <TextBlock Text="Settings" Style="{StaticResource PageTitle}" />
+            <TextBlock Style="{StaticResource Lede}"
+                       Text="Click a field and press a new key combination." />
+
+            <TextBlock Text="SHORTCUTS" Style="{StaticResource GroupLabel}" Margin="2,0,0,8" />
+
+            <Border Style="{StaticResource SettingRow}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Rectangle Grid.Column="0" Width="3" Fill="{DynamicResource Shell.Accent}" />
+                    <ui:SymbolIcon Grid.Column="1" Symbol="Pin24" FontSize="18" Margin="16,0,0,0"
+                                   VerticalAlignment="Center"
+                                   Foreground="{DynamicResource Shell.Accent}" />
+                    <StackPanel Grid.Column="2" Margin="14,14,14,14" VerticalAlignment="Center">
+                        <TextBlock Text="Pin the focused window" Style="{StaticResource RowTitle}" />
+                        <TextBlock Text="Press again to unpin."
+                                   Style="{StaticResource RowCaption}" />
+                    </StackPanel>
+                    <ui:TextBox Grid.Column="3" x:Name="HkPin" Width="170" IsReadOnly="True" Tag="pin"
+                                Margin="0,0,12,0" VerticalAlignment="Center"
+                                PreviewKeyDown="Hotkey_PreviewKeyDown" />
+                </Grid>
+            </Border>
+
+            <Border Style="{StaticResource SettingRow}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Rectangle Grid.Column="0" Width="3" Fill="{DynamicResource Shell.Accent}" />
+                    <ui:SymbolIcon Grid.Column="1" Symbol="PinOff24" FontSize="18" Margin="16,0,0,0"
+                                   VerticalAlignment="Center"
+                                   Foreground="{DynamicResource Shell.Accent}" />
+                    <StackPanel Grid.Column="2" Margin="14,14,14,14" VerticalAlignment="Center">
+                        <TextBlock Text="Unpin all windows" Style="{StaticResource RowTitle}" />
+                        <TextBlock Text="Works from inside games."
+                                   Style="{StaticResource RowCaption}" />
+                    </StackPanel>
+                    <ui:TextBox Grid.Column="3" x:Name="HkUnpinAll" Width="170" IsReadOnly="True"
+                                Tag="unpinall" Margin="0,0,12,0" VerticalAlignment="Center"
+                                PreviewKeyDown="Hotkey_PreviewKeyDown" />
+                </Grid>
+            </Border>
+
+            <ui:InfoBar x:Name="HotkeyWarning" Margin="0,8,0,0" IsOpen="False" IsClosable="True"
+                        Severity="Warning" Title="Shortcut not available" />
+
+            <TextBlock Text="STARTUP" Style="{StaticResource GroupLabel}" />
+
+            <Border Style="{StaticResource SettingRow}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Rectangle Grid.Column="0" Width="3" Fill="{DynamicResource Shell.Line}" />
+                    <ui:SymbolIcon Grid.Column="1" Symbol="Power24" FontSize="18" Margin="16,0,0,0"
+                                   VerticalAlignment="Center"
+                                   Foreground="{DynamicResource Shell.Muted}" />
+                    <StackPanel Grid.Column="2" Margin="14,14,14,14" VerticalAlignment="Center">
+                        <TextBlock Text="Start with Windows" Style="{StaticResource RowTitle}" />
+                        <TextBlock Text="No admin rights needed."
+                                   Style="{StaticResource RowCaption}" />
+                    </StackPanel>
+                    <ui:ToggleSwitch Grid.Column="3" x:Name="ChkStartWithWindows" Margin="0,0,14,0"
+                                     VerticalAlignment="Center"
+                                     Checked="General_Changed" Unchecked="General_Changed" />
+                </Grid>
+            </Border>
+
+            <Border Style="{StaticResource SettingRow}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Rectangle Grid.Column="0" Width="3" Fill="{DynamicResource Shell.Line}" />
+                    <ui:SymbolIcon Grid.Column="1" Symbol="ArrowMinimize24" FontSize="18" Margin="16,0,0,0"
+                                   VerticalAlignment="Center"
+                                   Foreground="{DynamicResource Shell.Muted}" />
+                    <StackPanel Grid.Column="2" Margin="14,14,14,14" VerticalAlignment="Center">
+                        <TextBlock Text="Start minimized to tray"
+                                   Style="{StaticResource RowTitle}" />
+                    </StackPanel>
+                    <ui:ToggleSwitch Grid.Column="3" x:Name="ChkStartMinimized" Margin="0,0,14,0"
+                                     VerticalAlignment="Center"
+                                     Checked="General_Changed" Unchecked="General_Changed" />
+                </Grid>
+            </Border>
+
+            <Border Style="{StaticResource SettingRow}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Rectangle Grid.Column="0" Width="3" Fill="{DynamicResource Shell.Line}" />
+                    <ui:SymbolIcon Grid.Column="1" Symbol="Alert24" FontSize="18" Margin="16,0,0,0"
+                                   VerticalAlignment="Center"
+                                   Foreground="{DynamicResource Shell.Muted}" />
+                    <StackPanel Grid.Column="2" Margin="14,14,14,14" VerticalAlignment="Center">
+                        <TextBlock Text="Notifications" Style="{StaticResource RowTitle}" />
+                        <TextBlock Text="Show a message when a shortcut is used."
+                                   Style="{StaticResource RowCaption}" />
+                    </StackPanel>
+                    <ui:ToggleSwitch Grid.Column="3" x:Name="ChkNotifications" Margin="0,0,14,0"
+                                     VerticalAlignment="Center"
+                                     Checked="General_Changed" Unchecked="General_Changed" />
+                </Grid>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>
